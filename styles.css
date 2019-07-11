@@ -1,4 +1,26 @@
 body {
-  font-family: 'Press Start 2P', cursive;
   background-color: #FFFAE2;
+}
+
+.container {
+  margin-top: 25vh;
+  padding: 5px;
+  width: 100%;
+  height: 50vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.item {
+  text-align: center;
+  padding: 5px;
+  width: 20px;
+  background-color: #FCD581;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
 }
