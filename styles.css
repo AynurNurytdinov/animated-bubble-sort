@@ -1,5 +1,6 @@
 body {
   background-color: #FFFAE2;
+  overflow: hidden;
 }
 
 .container {
@@ -23,4 +24,12 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: flex-end;
+}
+
+.selected {
+  background-color: #70C1B3;
+}
+
+.sorted {
+  background-color: #E76F51;
 }
