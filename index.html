@@ -4,8 +4,6 @@
       <title>Анимированная сортировка пузырьком</title>
    </head>
    <link rel="stylesheet" href="./styles.css">
-   <script src="https://d3js.org/d3.v5.min.js"></script>
-   <script src="./index.js"></script>
    <body>
       <div>
          <h1>Анимированная сортировка пузырьком</h1>
@@ -15,11 +13,13 @@
          <button onclick="fill()">Начать</button>
       </div>
       <div id="buttons">
-         <button onclick="bubbleSort()">Сортировать</button>
-         <button onclick="stop = true">Стоп</button>
+         <button id="sortArrBut" onclick="bubbleSort()">Сортировать</button>
+         <button onclick="stopSort()">Стоп</button>
          <button onclick="reset()">Сброс</button>
          <button id="showInitialArrBut" onclick="showInitialArr()">Показать исх. массив</button>
          <div>Перестановки: <span id="counter">0</span></div>
       </div>
+      <script src="https://d3js.org/d3.v5.min.js"></script>
+      <script src="./index.js"></script>
    </body>
 </html>

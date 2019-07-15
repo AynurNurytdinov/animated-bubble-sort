@@ -2,8 +2,10 @@ count = 0; // количество элементов
 durationTime = 0; // скорость анимации
 
 function fill() {
+   stop = false; // флаг остановки
    // если массив был отрисован, удаляем
    if (document.getElementById('svg')) {
+      stop = true; // флаг остановки
       document.getElementById('svg').remove();
    }
    
@@ -18,7 +20,6 @@ function fill() {
          array = d3.shuffle(d3.range(1, count)); // генерируем массив от 1 до count
          unsortedArray = [...array];
          sortedArray = [];
-         stop = false; // флаг остановки
          steps = 0; // Счётчик перестановок
          width = document.body.getBoundingClientRect().width - 20;
          height = 300;
@@ -60,8 +61,14 @@ function fill() {
       alert('Заполните поля');
    }  
 }
+// Функция паузы
+function stopSort() {
+   stop = true;
+   document.getElementById('sortArrBut').disabled = false;
+}
 // Функция сброса
 function reset() {
+   document.getElementById("sortArrBut").disabled = false;
    stop = true; // Останавливаем сортировку
    unsortedArray = [...array];
    sortedArray = [];
@@ -76,8 +83,12 @@ function reset() {
 }
 // функция сортировки
 function bubbleSort() {
+   document.getElementById("sortArrBut").disabled = true;
    function sort(i) {
-      if (!unsortedArray.length || stop) return stop = false;
+      if (!unsortedArray.length || stop) {
+         document.getElementById('sortArrBut').disabled = false;
+         return stop = false;
+      }
       if (i <= unsortedArray.length) { // если мы закончили проход по массиву, начинаем заново, до тех пор пока в unsortedArray не останется элементов
          // Условие для перестановки 
          // Если она не требуется и элемент на своем месте закрашиваем его иначе, переходим на след элемент
@@ -163,7 +174,7 @@ function isNumeric(n) {
 // обратока нажатия на Enter
 function onKeyPressEnter(event) {
    // Код 13 это клавиша "Enter" 
-  if (event.keyCode === 13) {
-   fill();
- }
+   if (event.keyCode === 13) {
+      fill();
+   }
 }

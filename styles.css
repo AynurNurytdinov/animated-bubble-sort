@@ -31,6 +31,13 @@ button {
    cursor: pointer;
 }
 
+button:disabled {
+   cursor: default;
+   border: 1px solid #999999;
+   background-color: #cccccc;
+   color: #666666;
+}
+
 input[type=text] {
    border-radius: 5px;
    padding: 10px 16px;
