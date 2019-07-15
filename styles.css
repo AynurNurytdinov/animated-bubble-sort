@@ -1,43 +1,42 @@
 body {
-  background-color: #FFFAE2;
-  overflow: hidden;
+   background-color: #FFFAE2;
 }
 
 text {
-  fill: #272727;
+   fill: #272727;
 }
 
 rect {
-  fill: #FCD581;
+   fill: #FCD581;
 }
 
 .sorted {
-  fill: #E76F51;
+   fill: #E76F51;
 }
 
 .selected {
-  fill: #70C1B3;
+   fill: #70C1B3;
 }
 
 button {
-  background-color: #247BA0; 
-  border-radius: 5px;
-  border: none;
-  color: white;
-  padding: 10px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  cursor: pointer;
+   background-color: #247BA0; 
+   border-radius: 5px;
+   border: none;
+   color: white;
+   padding: 10px 16px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 14px;
+   cursor: pointer;
 }
 
 input[type=text] {
-  border-radius: 5px;
-  padding: 10px 16px;
-  margin: 8px 0;
-  box-sizing: border-box;
+   border-radius: 5px;
+   padding: 10px 16px;
+   margin: 8px 0;
+   box-sizing: border-box;
 }
 #buttons {
-  display: none;
+   display: none;
 }

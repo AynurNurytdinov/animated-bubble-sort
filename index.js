@@ -11,46 +11,52 @@ function fill() {
    durationTime = document.getElementById('durationField').value;
    // если поля заполнены отображаем массив, иначе alert
    if (count && durationTime) {
-      document.getElementById('buttons').style.display = 'block'; // показываем панель для начала, остановки и сброса сортировки
-      count = parseInt(count, 10) + 1;
-      durationTime = parseFloat(durationTime) * 1000;
-      array = d3.shuffle(d3.range(1, count)); // генерируем массив от 1 до count
-      unsortedArray = [...array];
-      sortedArray = [];
-      stop = false; // флаг остановки
-      steps = 0; // Счётчик перестановок
-      width = document.body.getBoundingClientRect().width - 20;
-      height = 5000;
-      itemWidth = width/count;
-      // Получив значение из domain, возвращает соответствующее значение из range
-      x = d3.scaleLinear()
-         .domain([0,count])
-         .range([0, width]);
-      // Добавляем элемент svg c шириной width и высотой height
-      svg = d3.select('body').append('svg')
-         .attr('id', 'svg')
-         .attr('width', width)
-         .attr('height', height)
-      .append('g').attr('transform', 'translate(0, 15)');
-      // создаем элементы rect в svg
-      rects = svg.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
-         .selectAll('rect')
-         .data(unsortedArray)
-      .enter().append('rect');
-      rects.attr('id', (d) => {return 'item-' + d})
-         .attr('transform', (d, i) => {return 'translate(' + (x(i) - itemWidth) + ', 0)'})
-         .attr('width', itemWidth *.9)
-         .attr('height', (d) => {return d * itemWidth / 3;})
-         .attr('rx', 10)
-         .attr('ry', 10);
-      // создаем элементы text в svg
-      labels = svg.selectAll('text')
-         .data(unsortedArray)
-      .enter().append('text');
-      labels.attr('id', (d) => {return 'text-' + d})
-         .attr('transform', (d, i) => {return 'translate(' + x(i) + ', 0)'})
-         .html((d) => {return d;});
+      if (isNumeric(count) && isNumeric(durationTime)) {
+         document.getElementById('buttons').style.display = 'block'; // показываем панель для начала, остановки и сброса сортировки
+         count = parseInt(count, 10) + 1;
+         durationTime = parseFloat(durationTime) * 1000;
+         array = d3.shuffle(d3.range(1, count)); // генерируем массив от 1 до count
+         unsortedArray = [...array];
+         sortedArray = [];
+         stop = false; // флаг остановки
+         steps = 0; // Счётчик перестановок
+         width = document.body.getBoundingClientRect().width - 20;
+         height = 300;
+         itemWidth = width/count;
+         // Получив значение из domain, возвращает соответствующее значение из range
+         x = d3.scaleLinear()
+            .domain([0,count])
+            .range([0, width]);
+         // Добавляем элемент svg c шириной width и высотой height
+         svg = d3.select('body').append('svg')
+            .attr('id', 'svg')
+            .attr('width', width)
+            .attr('height', height)
+         .append('g').attr('transform', 'translate(0, 15)');
+         // создаем элементы rect в svg
+         rects = svg.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
+            .selectAll('rect')
+            .data(unsortedArray)
+         .enter().append('rect');
+         rects.attr('id', (d) => {return 'item-' + d})
+            .attr('transform', (d, i) => {return 'translate(' + (x(i) - itemWidth) + ', 0)'})
+            .attr('width', itemWidth *.9)
+            .attr('height', (d) => {return d * itemWidth / 7;})
+            .attr('rx', 10)
+            .attr('ry', 10);
+         // создаем элементы text в svg
+         labels = svg.selectAll('text')
+            .data(unsortedArray)
+         .enter().append('text');
+         labels.attr('id', (d) => {return 'text-' + d})
+            .attr('transform', (d, i) => {return 'translate(' + x(i) + ', 0)'})
+            .html((d) => {return d;});
+      } else {
+         document.getElementById('buttons').style.display = 'none'; // скрываем панель для начала, остановки и сброса сортировки
+         alert('Неверный формат данных');
+      }
    } else {
+      document.getElementById('buttons').style.display = 'none'; // скрываем панель для начала, остановки и сброса сортировки
       alert('Заполните поля');
    }  
 }
@@ -71,7 +77,7 @@ function reset() {
 // функция сортировки
 function bubbleSort() {
    function sort(i) {
-      if (!unsortedArray.length || stop) return stop = false; // 
+      if (!unsortedArray.length || stop) return stop = false;
       if (i <= unsortedArray.length) { // если мы закончили проход по массиву, начинаем заново, до тех пор пока в unsortedArray не останется элементов
          // Условие для перестановки 
          // Если она не требуется и элемент на своем месте закрашиваем его иначе, переходим на след элемент
@@ -117,4 +123,40 @@ function slide(d, i) {
    d3.select('#item-' + d)
       .transition().duration(durationTime)
       .attr('transform', (d) => {return 'translate(' + (x(i-1)) + ', 0)'})                
+}
+// функция показа исходного массива 
+function showInitialArr() {
+   if (document.getElementById('svgInit')) { // Если исх массив отображен, скрыть, иначе отразить,  переименовать кнопку
+      document.getElementById('svgInit').remove();
+      document.getElementById('showInitialArrBut').innerHTML = 'Показать исх. массив';
+   } else {
+      svgInit = d3.select('body').append('svg')
+         .attr('id', 'svgInit')
+         .attr('width', width)
+         .attr('height', height)
+      .append('g').attr('transform', 'translate(0, 15)');
+      // создаем элементы rect в svgInit
+      rects = svgInit.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
+         .selectAll('rect')
+         .data(array)
+      .enter().append('rect');
+      rects.attr('id', (d) => {return 'initItem-' + d})
+         .attr('transform', (d, i) => {return 'translate(' + (x(i) - itemWidth) + ', 0)'})
+         .attr('width', itemWidth *.9)
+         .attr('height', (d) => {return d * itemWidth / 7;})
+         .attr('rx', 10)
+         .attr('ry', 10);
+      // создаем элементы text в svgInit
+      labels = svgInit.selectAll('text')
+         .data(array)
+      .enter().append('text');
+      labels.attr('id', (d) => {return 'text-' + d})
+         .attr('transform', (d, i) => {return 'translate(' + x(i) + ', 0)'})
+         .html((d) => {return d;});
+      document.getElementById('showInitialArrBut').innerHTML = 'Скрыть исх. массив';
+   }
+}
+// функция проверки на число
+function isNumeric(n) {
+   return !isNaN(parseFloat(n)) && isFinite(n);
 }
