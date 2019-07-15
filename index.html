@@ -4,8 +4,21 @@
       <title>Анимированная сортировка пузырьком</title>
    </head>
    <link rel="stylesheet" href="./styles.css">
+   <script src="http://d3js.org/d3.v5.min.js"></script>
+   <script src="./index.js"></script>
    <body>
-      <div id="container" class="container"></div>
-      <script src="./index.js"></script>
+      <div>
+         <h1>Анимированная сортировка пузырьком</h1>
+         <h3>Заполните поля: количество элементов и скорость анимации в сек и нажмите начать</h3>
+         <input id="countField" type="text" placeholder="Количество элементов"/>
+         <input id="durationField" type="text" placeholder="Скорость анимации, с"/>
+         <button onclick="fill()">Начать</button>
+      </div>
+      <div id="buttons">
+         <button onclick="bubbleSort()">Сортировать</button>
+         <button onclick="stop = true">Стоп</button>
+         <button onclick="reset()">Сброс</button>
+         <div>Перестановки: <span id="counter">0</span></div>
+      </div>
    </body>
 </html>

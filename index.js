@@ -1,69 +1,120 @@
-// генерация массива
-// проверка на целые числа
-// начальная форма и инструкции
+count = 0; // количество элементов 
+durationTime = 0; // скорость анимации
 
-class BubbleSort {
-   container = document.getElementById('container');
-   arr = [52, 116, 73, 15, 122, 132, 88, 43, 97, 61, 1, 85];
-
-   max = Math.max(...this.arr);
-
-   fillContainer() {
-      var style = document.createElement('style');
-      style.type = 'text/css';
-      for (let i = 0; i < this.arr.length; i++) {
-         let item = document.createElement('div');
-         item.id = `item-${i}`;
-         item.innerHTML = `<span>${this.arr[i]}</span>`;
-         let heightItem = Math.round(this.arr[i] * 1000 / this.max) / 10;
-         style.innerHTML += `.item-${i} { height: ${heightItem}%; margin-top: ${100 - heightItem}%; }\n`;
-         item.className = `item item-${i}`;
-         item.style = `order: ${i}`;
-         this.container.appendChild(item);
-      }
-      
-      console.log(document.getElementById(`item-0`).offsetLeft, document.getElementById(`item-1`).offsetLeft)
-      console.log(document.getElementById(`item-2`).offsetLeft, document.getElementById(`item-3`).offsetLeft)
-      console.log(document.getElementById(`item-4`).offsetLeft, document.getElementById(`item-5`).offsetLeft)
-
-      document.getElementsByTagName('head')[0].appendChild(style);
+function fill() {
+   // если массив был отрисован, удаляем
+   if (document.getElementById('svg')) {
+      document.getElementById('svg').remove();
    }
-
-   sort() {
-      for (let i = 0; i < this.arr.length - 1; i++) {
-         let wasSwap = false;
-         for (let j = 0; j < this.arr.length - 1 - i; j++) {
-            var swapItem1 = document.getElementById(`item-${j}`);
-            swapItem1.classList.add('selected');
-            var swapItem2 = document.getElementById(`item-${j + 1}`);
-            swapItem2.classList.add('selected');
-            // var distance = second.offsetTop - first.offsetTop - first.offsetHeight;
-
-            if (this.arr[j] > this.arr[j + 1]) {
-               const temp = this.arr[j];
-               this.arr[j] = this.arr[j + 1];
-               this.arr[j + 1] = temp;
-
-               swapItem1.style = `order: ${j + 1}`;
-               swapItem2.style = `order: ${j}`;
-
-               swapItem1.id = `item-${j + 1}`;
-               swapItem2.id = `item-${j}`;
-
-               wasSwap = true;
-            }
-            swapItem1.classList.remove('selected');
-         }
-         swapItem2.classList.remove('selected');
-         document.getElementById(`item-${this.arr.length - 1 - i}`).classList.add('sorted');
-         if (!wasSwap) {
-            document.getElementById(`item-0`).classList.add('sorted');
-            break;
-         }
-     }
-   }
+   
+   count = document.getElementById('countField').value;
+   durationTime = document.getElementById('durationField').value;
+   // если поля заполнены отображаем массив, иначе alert
+   if (count && durationTime) {
+      document.getElementById('buttons').style.display = 'block'; // показываем панель для начала, остановки и сброса сортировки
+      count = parseInt(count, 10) + 1;
+      durationTime = parseFloat(durationTime) * 1000;
+      array = d3.shuffle(d3.range(1, count)); // генерируем массив от 1 до count
+      unsortedArray = [...array];
+      sortedArray = [];
+      stop = false; // флаг остановки
+      steps = 0; // Счётчик перестановок
+      width = document.body.getBoundingClientRect().width - 20;
+      height = 5000;
+      itemWidth = width/count;
+      // Получив значение из domain, возвращает соответствующее значение из range
+      x = d3.scaleLinear()
+         .domain([0,count])
+         .range([0, width]);
+      // Добавляем элемент svg c шириной width и высотой height
+      svg = d3.select('body').append('svg')
+         .attr('id', 'svg')
+         .attr('width', width)
+         .attr('height', height)
+      .append('g').attr('transform', 'translate(0, 15)');
+      // создаем элементы rect в svg
+      rects = svg.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
+         .selectAll('rect')
+         .data(unsortedArray)
+      .enter().append('rect');
+      rects.attr('id', (d) => {return 'item-' + d})
+         .attr('transform', (d, i) => {return 'translate(' + (x(i) - itemWidth) + ', 0)'})
+         .attr('width', itemWidth *.9)
+         .attr('height', (d) => {return d * itemWidth / 3;})
+         .attr('rx', 10)
+         .attr('ry', 10);
+      // создаем элементы text в svg
+      labels = svg.selectAll('text')
+         .data(unsortedArray)
+      .enter().append('text');
+      labels.attr('id', (d) => {return 'text-' + d})
+         .attr('transform', (d, i) => {return 'translate(' + x(i) + ', 0)'})
+         .html((d) => {return d;});
+   } else {
+      alert('Заполните поля');
+   }  
 }
-
-BubbleSort = new BubbleSort();
-BubbleSort.fillContainer();
-BubbleSort.sort();
+// Функция сброса
+function reset() {
+   stop = true; // Останавливаем сортировку
+   unsortedArray = [...array];
+   sortedArray = [];
+   d3.select('#counter').html(steps = 0); // Обнуляем счётчик перестановок
+   // Возвращаем на исходные позиции 
+   labels.attr('class', '')                
+      .transition().duration(2000)
+      .attr('transform', (d, i) => {return 'translate(' + (x(i)) + ', 0)'});        
+   rects.attr('class', '')                
+      .transition().duration(2000)
+      .attr('transform', (d,  i) => {return 'translate(' + (x(i-1)) + ', 0)'});
+}
+// функция сортировки
+function bubbleSort() {
+   function sort(i) {
+      if (!unsortedArray.length || stop) return stop = false; // 
+      if (i <= unsortedArray.length) { // если мы закончили проход по массиву, начинаем заново, до тех пор пока в unsortedArray не останется элементов
+         // Условие для перестановки 
+         // Если она не требуется и элемент на своем месте закрашиваем его иначе, переходим на след элемент
+         if (unsortedArray[i] < unsortedArray[i-1]) { 
+            d3.select('#item-' + unsortedArray[i]).attr('class', 'selected'); // Закрашиваем пару элементов, которые будут переставляться
+            d3.select('#item-' + unsortedArray[i-1]).attr('class', 'selected');
+            d3.timeout(() => {
+               d3.select('#item-' + unsortedArray[i]).attr('class', '');
+               d3.select('#item-' + unsortedArray[i-1]).attr('class', '');                                            
+            }, durationTime);
+            // Осуществляем перестановку
+            temp = unsortedArray[i-1];
+            unsortedArray[i-1] = unsortedArray[i];
+            unsortedArray[i] = temp;
+            // Отображаем перестановку
+            slide(unsortedArray[i], i + sortedArray);
+            slide(unsortedArray[i-1], i - 1 + sortedArray);
+            // Увеличиваем счётчик перестановок на один
+            d3.select('#counter').html(++steps);
+            // Переходим на следующий элемент массива
+            d3.timeout(() => {return sort(++i)}, durationTime);
+         } else if (i === unsortedArray.length) {
+            // Закрашиваем отсортированные элементы 
+            for (n = i; n === unsortedArray[n-1]; n--) {
+               d3.select('#item-' + n).attr('class', 'sorted');
+               unsortedArray.pop();
+            }     
+            sort(++i);
+         } else {               
+            sort(++i);
+         }
+      } else {
+         bubbleSort();
+      }
+   }
+   sort(1);
+}
+// функция отображения и перестановки
+function slide(d, i) {
+   d3.select('#text-' + d)
+      .transition().duration(durationTime)
+      .attr('transform', (d) => { return 'translate(' + (x(i)) + ', 0)' })
+   d3.select('#item-' + d)
+      .transition().duration(durationTime)
+      .attr('transform', (d) => {return 'translate(' + (x(i-1)) + ', 0)'})                
+}
