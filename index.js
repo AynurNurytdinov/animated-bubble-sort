@@ -8,12 +8,17 @@ function fill() {
       stop = true; // флаг остановки
       document.getElementById('svg').remove();
    }
+   if (document.getElementById('svgInit')) {
+      document.getElementById('svgInit').remove();
+      document.getElementById('showInitialArrBut').innerHTML = 'Показать исх. массив';
+   }
    
    count = document.getElementById('countField').value;
    durationTime = document.getElementById('durationField').value;
    // если поля заполнены отображаем массив, иначе alert
    if (count && durationTime) {
       if (isNumeric(count) && isNumeric(durationTime)) {
+         document.getElementById('sortArrBut').disabled = false;
          document.getElementById('buttons').style.display = 'block'; // показываем панель для начала, остановки и сброса сортировки
          count = parseInt(count, 10) + 1;
          durationTime = parseFloat(durationTime) * 1000;
@@ -147,21 +152,21 @@ function showInitialArr() {
          .attr('height', height)
       .append('g').attr('transform', 'translate(0, 15)');
       // создаем элементы rect в svgInit
-      rects = svgInit.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
+      rectsInit = svgInit.append('g').attr('transform', 'translate(' + itemWidth + ', 0)')
          .selectAll('rect')
          .data(array)
       .enter().append('rect');
-      rects.attr('id', (d) => {return 'initItem-' + d})
+      rectsInit.attr('id', (d) => {return 'initItem-' + d})
          .attr('transform', (d, i) => {return 'translate(' + (x(i) - itemWidth) + ', 0)'})
          .attr('width', itemWidth *.9)
          .attr('height', (d) => {return d * itemWidth / 7;})
          .attr('rx', 10)
          .attr('ry', 10);
       // создаем элементы text в svgInit
-      labels = svgInit.selectAll('text')
+      labelsInit = svgInit.selectAll('text')
          .data(array)
       .enter().append('text');
-      labels.attr('id', (d) => {return 'text-' + d})
+      labelsInit.attr('id', (d) => {return 'textInit-' + d})
          .attr('transform', (d, i) => {return 'translate(' + x(i) + ', 0)'})
          .html((d) => {return d;});
       document.getElementById('showInitialArrBut').innerHTML = 'Скрыть исх. массив';
@@ -171,7 +176,7 @@ function showInitialArr() {
 function isNumeric(n) {
    return !isNaN(parseFloat(n)) && isFinite(n);
 }
-// обратока нажатия на Enter
+// обработка нажатия на Enter
 function onKeyPressEnter(event) {
    // Код 13 это клавиша "Enter" 
    if (event.keyCode === 13) {
