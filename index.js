@@ -160,3 +160,10 @@ function showInitialArr() {
 function isNumeric(n) {
    return !isNaN(parseFloat(n)) && isFinite(n);
 }
+// обратока нажатия на Enter
+function onKeyPressEnter(event) {
+   // Код 13 это клавиша "Enter" 
+  if (event.keyCode === 13) {
+   fill();
+ }
+}
